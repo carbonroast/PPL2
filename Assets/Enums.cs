@@ -1,0 +1,1 @@
+public enum Element {Red, Blue, Green, White};

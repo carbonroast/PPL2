@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
-using static Utils;
 
 public class Tile : GridObject
 {   
@@ -11,7 +10,13 @@ public class Tile : GridObject
 
     public void SetElement(Element element)
     {
+        this.element = element;
+        this.GetComponent<SpriteRenderer>().color = ElementalColorUtils.SetColor(element);
+    }
 
+    public void SetSprite(Element element)
+    {
+        // Future use a different sprite per element
     }
 
     public Element GetElement()

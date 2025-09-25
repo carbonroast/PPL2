@@ -18,16 +18,11 @@ public class GridManager : MonoBehaviour
     void Start()
     {
         grid = new GameObject[gridWidth, gridHeight];
-        int i=0;
         for(int x=0; x < gridWidth; x++)
         {
             for(int y=0; y < gridHeight; y++)
             {
-                 GameObject tile = Instantiate(tilePrefab,new Vector2(x,y),Quaternion.identity);
-                 tile.transform.SetParent(this.transform);
-                 tile.name = $"Tile: {i++}";
-                 tile.GetComponent<Tile>().SetPosition((x,y));
-                 grid[x,y] = tile;
+                CreateTile(grid, x,y);
             }
         }
     }
@@ -35,7 +30,17 @@ public class GridManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    public void CreateTile(GameObject[,] grid, int x, int y)
+    {
+        GameObject tile = Instantiate(tilePrefab,new Vector2(x,y),Quaternion.identity);
+        tile.transform.SetParent(this.transform);
+        tile.name = $"Tile: {x} - {y}";
+        tile.GetComponent<Tile>().SetElement(RNG.RandomElement());
+        tile.GetComponent<Tile>().Position = ((x,y));
+        grid[x,y] = tile;
     }
 
     public bool ValidMovement(Vector2 move)
@@ -66,6 +71,6 @@ public class GridManager : MonoBehaviour
     public void SetTile((int x, int y) position, GameObject tile)
     {
         grid[position.x,position.y] = tile;
-        tile.GetComponent<Tile>().SetPosition(position);
+        tile.GetComponent<Tile>().Position = position;
     }
 }

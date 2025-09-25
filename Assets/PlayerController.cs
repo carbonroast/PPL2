@@ -46,8 +46,8 @@ public class PlayerController : MonoBehaviour
 
         if(grid.GetComponent<GridManager>().ValidMovement(left + movement) && grid.GetComponent<GridManager>().ValidMovement(right + movement))
         {
-            selectorLeft.transform.Translate(movement);
-            selectorRight.transform.Translate(movement);
+            selectorLeft.GetComponent<PlayerTileSelector>().Position = ((int)(left.x + movement.x), (int)(left.y + movement.y));
+            selectorRight.GetComponent<PlayerTileSelector>().Position = ((int)(right.x + movement.x), (int)(right.y + movement.y));
         }
 
     }

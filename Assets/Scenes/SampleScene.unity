@@ -244,7 +244,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 8026268867851568632, guid: 6c5addce257f64c4dbf5652e49a8aa83, type: 3}
-  cellPrefab: {fileID: 3418127499201054322, guid: d4e1747fa7abb1b4aba0b9ee66bf6d46, type: 3}
+  tilePrefab: {fileID: 3418127499201054322, guid: d4e1747fa7abb1b4aba0b9ee66bf6d46, type: 3}
   gridWidth: 7
   gridHeight: 4
 --- !u!4 &956903959

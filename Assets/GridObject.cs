@@ -10,13 +10,15 @@ public class GridObject : MonoBehaviour
     public int X => x;
     public int Y => y;
 
-    public (int x, int y) Position => (X,Y);
-
-    public void SetPosition((int x, int y) position)
+    public (int x, int y) Position
     {
-        y = position.y;
-        x = position.x;
-        this.transform.position = new Vector2(position.x,position.y);
-    }
+        get =>(X,Y);
+        set
+        {
+            this.y = value.y;
+            this.x = value.x;
+            this.transform.position = new Vector2(value.x,value.y);
+        }
+    } 
 
 }
