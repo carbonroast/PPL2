@@ -29,9 +29,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""Movement"",
-                    ""type"": ""Value"",
+                    ""type"": ""Button"",
                     ""id"": ""0216d707-2133-4e2d-b2f6-e045bdca3bd7"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -159,7 +159,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""9f5b3abb-cf7f-44a4-8478-a278176fe097"",
+                    ""id"": ""ab823202-8899-4d4e-9c6a-a708f2744b14"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -170,7 +170,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""2b0ab31a-f429-48b4-bbd2-233184220d83"",
+                    ""id"": ""fd0dee92-bd3a-4dac-ba5f-6d1e08e98a93"",
                     ""path"": ""<Keyboard>/numpadEnter"",
                     ""interactions"": """",
                     ""processors"": """",

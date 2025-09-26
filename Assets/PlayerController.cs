@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     void OnEnable()
     {
         playerInput.actions["Movement"].performed += Movement;
-        playerInput.actions["Swap"].performed += Movement;
+        playerInput.actions["Swap"].performed += Swap;
 
     }
 
@@ -32,7 +32,8 @@ public class PlayerController : MonoBehaviour
     {
         playerInput.actions["Movement"].performed -= Movement;
         playerInputActions.Keyboard.Movement.Disable();
-        playerInput.actions["Swap"].performed -= Movement;
+        
+        playerInput.actions["Swap"].performed -= Swap;
         playerInputActions.Keyboard.Swap.Disable();
     }
 
@@ -48,36 +49,26 @@ public class PlayerController : MonoBehaviour
     {
     }
 
-    void Movement(InputAction.CallbackContext obj)
+    void Movement(InputAction.CallbackContext context)
     {
-        Debug.Log(obj);
-        // Vector2 movement = Vector2.zero;
-        // if (Input.GetKeyDown(KeyCode.W))
-        //     movement.y += 1;
-        // if (Input.GetKeyDown(KeyCode.S))
-        //     movement.y -= 1;
-        // if (Input.GetKeyDown(KeyCode.A))
-        //     movement.x -= 1;
-        // if (Input.GetKeyDown(KeyCode.D))
-        //     movement.x += 1;
+        Vector2 movement = context.ReadValue<Vector2>();
 
-        // Vector2 left = new Vector2(selectorLeft.transform.position.x, selectorLeft.transform.position.y);
-        // Vector2 right = new Vector2(selectorRight.transform.position.x, selectorRight.transform.position.y);
+        Vector2 left = new Vector2(selectorLeft.transform.position.x, selectorLeft.transform.position.y);
+        Vector2 right = new Vector2(selectorRight.transform.position.x, selectorRight.transform.position.y);
 
-        // if(grid.GetComponent<GridManager>().ValidMovement(left + movement) && grid.GetComponent<GridManager>().ValidMovement(right + movement))
-        // {
-        //     selectorLeft.GetComponent<PlayerTileSelector>().Position = ((int)(left.x + movement.x), (int)(left.y + movement.y));
-        //     selectorRight.GetComponent<PlayerTileSelector>().Position = ((int)(right.x + movement.x), (int)(right.y + movement.y));
-        // }
+        if(grid.GetComponent<GridManager>().ValidMovement(left + movement) && grid.GetComponent<GridManager>().ValidMovement(right + movement))
+        {
+            selectorLeft.GetComponent<PlayerTileSelector>().Position = ((int)(left.x + movement.x), (int)(left.y + movement.y));
+            selectorRight.GetComponent<PlayerTileSelector>().Position = ((int)(right.x + movement.x), (int)(right.y + movement.y));
+        }
 
     }
 
-    void Swap(InputAction.CallbackContext obj)
+    void Swap(InputAction.CallbackContext context)
     {
-        Debug.Log(obj);
-        // if(Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     grid.GetComponent<GridManager>().SwapTiles(selectorLeft, selectorRight);
-        // }
+        if(context.performed)
+        {
+            grid.GetComponent<GridManager>().SwapTiles(selectorLeft, selectorRight);
+        }
     }
 }
