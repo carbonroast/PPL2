@@ -272,13 +272,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 956903957}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 621567455fd1c4ceb811cc8a00b6a1a5, type: 3}
+  m_Script: {fileID: 11500000, guid: 10310cd122b003144b9c9bf3da62ceea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_NotificationBehavior: 3
   m_MaxPlayerCount: 2
   m_AllowJoining: 1
-  m_JoinBehavior: 2
+  m_JoinBehavior: 1
   m_PlayerJoinedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -286,17 +286,17 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_JoinAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Join
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 03ff5dd1-057f-47ce-99b3-35266d93e185
+      m_Id: a416a2b4-5c1d-46c7-b3f4-b333c5830b5b
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+    m_Reference: {fileID: -7518443950097807447, guid: 0381ad3652527974e8b40274b7f96a46, type: 3}
   m_PlayerPrefab: {fileID: 5431535074416385583, guid: 6c5addce257f64c4dbf5652e49a8aa83, type: 3}
   m_SplitScreen: 0
   m_MaintainAspectRatioInSplitScreen: 0

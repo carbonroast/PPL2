@@ -62,7 +62,6 @@ public class GameManager : MonoBehaviour
     {
         playerCount++;
         Debug.Log($"Player Count - {playerCount}."); 
-
     }
 
     public void OnPlayerLeft(PlayerInput playerInput)
