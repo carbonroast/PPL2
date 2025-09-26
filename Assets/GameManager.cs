@@ -11,23 +11,9 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //Set up the Player
-        GameObject playerGO = new GameObject("Player");
-        GameObject p1 = Instantiate(playerPrefab,Vector2.zero, quaternion.identity);
-        GameObject p2 = Instantiate(playerPrefab, Vector2.right, quaternion.identity);
-        p1.transform.SetParent(playerGO.transform);
-        p2.transform.SetParent(playerGO.transform);
-        p1.GetComponent<PlayerTileSelector>().Position = ((0,0));
-        p2.GetComponent<PlayerTileSelector>().Position = ((1,0));
+        CreatePlayer("Player");
+        CreateGrid();
 
-        playerGO.AddComponent<PlayerController>();
-
-        //Set up the grid
-        GameObject gridGO = new GameObject("GridManager");
-        gridGO.AddComponent<GridManager>();
-        gridGO.GetComponent<GridManager>().tilePrefab = tilePrefab;
-        gridGO.GetComponent<GridManager>().gridWidth = gridWidth;
-        gridGO.GetComponent<GridManager>().gridHeight = gridHeight;
         
     }
 
@@ -35,5 +21,19 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    void CreatePlayer(string name)
+    {
+        Instantiate(playerPrefab,Vector2.zero, Quaternion.identity);
+    }
+
+    void CreateGrid()
+    {
+        GameObject gridGO = new GameObject("GridManager");
+        gridGO.AddComponent<GridManager>();
+        gridGO.GetComponent<GridManager>().tilePrefab = tilePrefab;
+        gridGO.GetComponent<GridManager>().gridWidth = gridWidth;
+        gridGO.GetComponent<GridManager>().gridHeight = gridHeight;
     }
 }
