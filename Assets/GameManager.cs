@@ -2,30 +2,74 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject tilePrefab;
     [SerializeField] private int gridWidth, gridHeight;
+    private PlayerInputManager manager;
+    private List<GameObject> players = new List<GameObject>();
+    private int playerCount;
+
+    void Awake()
+    {
+        manager = GetComponent<PlayerInputManager>();
+        manager.onPlayerJoined += OnPlayerJoined;
+        manager.onPlayerLeft += OnPlayerLeft;
+    }
     // Start is called before the first frame update
     void Start()
     {
-        CreatePlayer("Player");
         CreateGrid();
 
         
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+
+        if(Input.GetKeyDown(KeyCode.Y))
+        {
+            KickPlayer();
+        }
     }
 
-    void CreatePlayer(string name)
+    void AddPlayer()
     {
-        Instantiate(playerPrefab,Vector2.zero, Quaternion.identity);
+        PlayerInput newPlayer = manager.JoinPlayer();
+        if (newPlayer != null)
+        {
+            players.Add(newPlayer.gameObject);
+        }
+        else
+        {
+            Debug.LogError("JoinPlayer failed — check PlayerInputManager Player Prefab!");
+        }
+    }
+
+    void KickPlayer()
+    {
+        if(players.Count > 0)
+        {
+            Destroy(players[players.Count-1].gameObject);
+            players.RemoveAt(players.Count -1);
+        }
+
+    }
+    public void OnPlayerJoined(PlayerInput playerInput)
+    {
+        playerCount++;
+        Debug.Log($"Player Count - {playerCount}."); 
+
+    }
+
+    public void OnPlayerLeft(PlayerInput playerInput)
+    {
+        playerCount--;
+        Debug.Log($"Player Count - {playerCount}."); 
+
     }
 
     void CreateGrid()
