@@ -17,7 +17,7 @@ public class GridObject : MonoBehaviour
         {
             this.y = value.y;
             this.x = value.x;
-            this.transform.position = new Vector2(value.x,value.y);
+            this.transform.localPosition = new Vector2(value.x,value.y);
         }
     } 
 

@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject tilePrefab;
     [SerializeField] private int gridWidth, gridHeight;
+    [SerializeField] Camera cam;
+
     private PlayerInputManager manager;
     private List<GameObject> players = new List<GameObject>();
     private int playerCount;
@@ -18,11 +20,22 @@ public class GameManager : MonoBehaviour
         manager = GetComponent<PlayerInputManager>();
         manager.onPlayerJoined += OnPlayerJoined;
         manager.onPlayerLeft += OnPlayerLeft;
+        AddPlayer();
     }
     // Start is called before the first frame update
     void Start()
     {
-        CreateGrid();
+        Vector2 screen = GetScreenSize();
+        float tile_offset = .5f;
+        float screen_left = -screen.x / 2f;
+        float middle_section = 5f;
+
+        float edge_offset = (screen.x - 2*gridWidth - middle_section)/2 ;
+
+        float bottom = (-screen.y / 2f) + .5f;
+
+        CreateGrid(screen_left + edge_offset + tile_offset, bottom);
+        CreateGrid(middle_section/2 + tile_offset, bottom);
 
         
     }
@@ -71,12 +84,24 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void CreateGrid()
+    Vector2 GetScreenSize()
     {
-        GameObject gridGO = new GameObject("GridManager");
-        gridGO.AddComponent<GridManager>();
-        gridGO.GetComponent<GridManager>().tilePrefab = tilePrefab;
-        gridGO.GetComponent<GridManager>().gridWidth = gridWidth;
-        gridGO.GetComponent<GridManager>().gridHeight = gridHeight;
+        float height = 2f * cam.orthographicSize;
+        float width = height * cam.aspect;
+        return new Vector2(width, height);
     }
+
+    void CreateGrid(float xOffset, float yOffset)
+    {
+
+        GameObject gridGO = new GameObject("GridManager");
+        gridGO.transform.position = new Vector2(xOffset, yOffset);
+
+        GridManager gm = gridGO.AddComponent<GridManager>();
+        gm.tilePrefab = tilePrefab;
+        gm.gridWidth = gridWidth;
+        gm.gridHeight = gridHeight;
+    }
+
+
 }
