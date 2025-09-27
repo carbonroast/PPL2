@@ -8,9 +8,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    GameObject grid;
-    GameObject selectorLeft;
-    GameObject selectorRight;
+    GridManager gm;
+    PlayerTileSelector leftSelector;
+    PlayerTileSelector rightSelector;
     PlayerInputActions playerInputActions;
     PlayerInput playerInput;
 
@@ -32,16 +32,14 @@ public class PlayerController : MonoBehaviour
     {
         playerInput.actions["Movement"].performed -= Movement;
         playerInputActions.Keyboard.Movement.Disable();
-        
+
         playerInput.actions["Swap"].performed -= Swap;
         playerInputActions.Keyboard.Swap.Disable();
     }
 
     void Start()
     {
-        grid = GameObject.Find("GridManager"); 
-        selectorLeft = this.transform.GetChild(0).gameObject;
-        selectorRight = this.transform.GetChild(1).gameObject;
+        Init();
     }
 
     // Update is called once per frame
@@ -51,15 +49,20 @@ public class PlayerController : MonoBehaviour
 
     void Movement(InputAction.CallbackContext context)
     {
-        Vector2 movement = context.ReadValue<Vector2>();
+        Vector2 rawInput = context.ReadValue<Vector2>();
+        int dx = (int)Mathf.Round(rawInput.x);
+        int dy = (int)Mathf.Round(rawInput.y);
 
-        Vector2 left = new Vector2(selectorLeft.transform.position.x, selectorLeft.transform.position.y);
-        Vector2 right = new Vector2(selectorRight.transform.position.x, selectorRight.transform.position.y);
+        (int x, int y) leftPos = leftSelector.Position;
+        (int x, int y) rightPos = rightSelector.Position;
 
-        if(grid.GetComponent<GridManager>().ValidMovement(left + movement) && grid.GetComponent<GridManager>().ValidMovement(right + movement))
+        (int x, int y) leftTarget = (leftPos.x + dx, leftPos.y + dy);
+        (int x, int y) rightTarget = (rightPos.x + dx, rightPos.y + dy);
+
+        if (gm.ValidMovement(leftTarget) && gm.ValidMovement(rightTarget))
         {
-            selectorLeft.GetComponent<PlayerTileSelector>().Position = ((int)(left.x + movement.x), (int)(left.y + movement.y));
-            selectorRight.GetComponent<PlayerTileSelector>().Position = ((int)(right.x + movement.x), (int)(right.y + movement.y));
+            leftSelector.Position = leftTarget;
+            rightSelector.Position = rightTarget;
         }
 
     }
@@ -68,7 +71,20 @@ public class PlayerController : MonoBehaviour
     {
         if(context.performed)
         {
-            grid.GetComponent<GridManager>().SwapTiles(selectorLeft, selectorRight);
+            gm.SwapTiles(leftSelector.Position, rightSelector.Position);
         }
+    }
+    public void SetGridManager(GridManager gm)
+    {
+        this.gm = gm;
+    }
+    void Init()
+    {
+        GameObject leftSelectorGO = this.transform.GetChild(0).gameObject;
+        GameObject rightSelectorGO = this.transform.GetChild(1).gameObject;
+        leftSelector = leftSelectorGO.GetComponent<PlayerTileSelector>();
+        rightSelector = rightSelectorGO.GetComponent<PlayerTileSelector>();
+        leftSelector.Position = ((0,0));
+        rightSelector.Position = ((1,0));
     }
 }

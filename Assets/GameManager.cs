@@ -13,31 +13,18 @@ public class GameManager : MonoBehaviour
 
     private PlayerInputManager manager;
     private List<GameObject> players = new List<GameObject>();
+    private List<GridManager> grids = new List<GridManager>();
     private int playerCount;
 
     void Awake()
     {
-        manager = GetComponent<PlayerInputManager>();
-        manager.onPlayerJoined += OnPlayerJoined;
-        manager.onPlayerLeft += OnPlayerLeft;
-        AddPlayer();
+
+        CreateManager();
     }
     // Start is called before the first frame update
     void Start()
     {
-        Vector2 screen = GetScreenSize();
-        float tile_offset = .5f;
-        float screen_left = -screen.x / 2f;
-        float middle_section = 5f;
-
-        float edge_offset = (screen.x - 2*gridWidth - middle_section)/2 ;
-
-        float bottom = (-screen.y / 2f) + .5f;
-
-        CreateGrid(screen_left + edge_offset + tile_offset, bottom);
-        CreateGrid(middle_section/2 + tile_offset, bottom);
-
-        
+        SpawnPlayerTiles();    
     }
 
     void Update()
@@ -64,16 +51,23 @@ public class GameManager : MonoBehaviour
 
     void KickPlayer()
     {
-        if(players.Count > 0)
-        {
-            Destroy(players[players.Count-1].gameObject);
-            players.RemoveAt(players.Count -1);
-        }
+        // if(players.Count > 0)
+        // {
+        //     Destroy(players[players.Count-1].gameObject);
+        //     players.RemoveAt(players.Count -1);
+        // }
 
     }
     public void OnPlayerJoined(PlayerInput playerInput)
     {
         playerCount++;
+        if(playerCount <= grids.Count)
+        {
+            Vector2 spawnPosition = grids[playerCount-1].transform.position;
+            playerInput.transform.position = spawnPosition;
+            playerInput.gameObject.GetComponent<PlayerController>().SetGridManager(grids[playerCount-1]);
+        }
+
         Debug.Log($"Player Count - {playerCount}."); 
     }
 
@@ -82,6 +76,28 @@ public class GameManager : MonoBehaviour
         playerCount--;
         Debug.Log($"Player Count - {playerCount}."); 
 
+    }
+
+    void CreateManager()
+    {
+        manager = GetComponent<PlayerInputManager>();
+        manager.onPlayerJoined += OnPlayerJoined;
+        manager.onPlayerLeft += OnPlayerLeft;
+    }
+
+    void SpawnPlayerTiles()
+    {
+        Vector2 screen = GetScreenSize();
+        float tile_offset = .5f;
+        float screen_left = -screen.x / 2f;
+        float middle_section = 5f;
+
+        float edge_offset = (screen.x - 2*gridWidth - middle_section)/2 ;
+
+        float bottom = (-screen.y / 2f) + .5f;
+
+        CreateGrid(screen_left + edge_offset + tile_offset, bottom);
+        CreateGrid(middle_section/2 + tile_offset, bottom);
     }
 
     Vector2 GetScreenSize()
@@ -101,6 +117,8 @@ public class GameManager : MonoBehaviour
         gm.tilePrefab = tilePrefab;
         gm.gridWidth = gridWidth;
         gm.gridHeight = gridHeight;
+
+        grids.Add(gm);
     }
 
 

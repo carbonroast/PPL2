@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerTileSelector : GridObject
 {
-
+    void Awake()
+    {
+        
+    }
 
 }

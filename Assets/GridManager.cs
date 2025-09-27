@@ -43,24 +43,19 @@ public class GridManager : MonoBehaviour
         grid[x,y] = tile;
     }
 
-    public bool ValidMovement(Vector2 move)
+
+    public bool ValidMovement((int x, int y) pos)
     {
-        if(move.x < 0 || move.x > gridWidth -1 || move.y < 0 || move.y > gridHeight -1)
-            return false;
-        return true;
+        return pos.x >= 0 && pos.x < gridWidth && pos.y >= 0 && pos.y < gridHeight;
     }
 
-    public void SwapTiles(GameObject selectorLeft, GameObject selectorRight)
+    public void SwapTiles((int x, int y) left, (int x, int y) right)
     {
+        GameObject leftTile = GetTile(left);
+        GameObject rightTile = GetTile(right);
 
-        (int x, int y) leftSelectorPosition = selectorLeft.GetComponent<PlayerTileSelector>().Position;
-        (int x, int y) rightSelectorPosition = selectorRight.GetComponent<PlayerTileSelector>().Position;
-        
-        GameObject leftTile = GetTile(leftSelectorPosition);
-        GameObject rightTile = GetTile(rightSelectorPosition);
-
-        SetTile(leftSelectorPosition, rightTile);
-        SetTile(rightSelectorPosition, leftTile);
+        SetTile(left, rightTile);
+        SetTile(right, leftTile);
     }
 
     public GameObject GetTile((int x, int y) position)
