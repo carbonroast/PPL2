@@ -19,14 +19,15 @@ public class Tile : GridObject
         // Future use a different sprite per element
     }
 
+
     public Element GetElement()
     {
         return element;
     }
-    private void Fall()
+
+    public void DestroyMe()
     {
-
+        Destroy(this.gameObject);
     }
-
 
 }

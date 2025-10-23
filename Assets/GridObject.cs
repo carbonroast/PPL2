@@ -10,7 +10,7 @@ public class GridObject : MonoBehaviour
     public int X => x;
     public int Y => y;
 
-    public (int x, int y) Position
+    public virtual (int x, int y) Position
     {
         get =>(X,Y);
         set

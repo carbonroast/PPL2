@@ -246,8 +246,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 5431535074416385583, guid: 6c5addce257f64c4dbf5652e49a8aa83, type: 3}
   tilePrefab: {fileID: 3418127499201054322, guid: d4e1747fa7abb1b4aba0b9ee66bf6d46, type: 3}
-  gridWidth: 7
-  gridHeight: 4
+  gridWidth: 6
+  gridHeight: 12
+  cam: {fileID: 519420031}
 --- !u!4 &956903959
 Transform:
   m_ObjectHideFlags: 0
