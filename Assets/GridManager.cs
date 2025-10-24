@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-using System.Linq;
-
+using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 public class GridManager : MonoBehaviour
 {
     public int gridWidth;
@@ -52,7 +54,7 @@ public class GridManager : MonoBehaviour
         return pos.x >= 0 && pos.x < gridWidth && pos.y >= 0 && pos.y < gridHeight;
     }
 
-    public void SwapTiles((int x, int y) left, (int x, int y) right)
+    public async Task SwapTilesAsync((int x, int y) left, (int x, int y) right)
     {
         Tile leftTile = GetTile(left);
         Tile rightTile = GetTile(right);
@@ -63,22 +65,55 @@ public class GridManager : MonoBehaviour
         SetTile(left, rightTile);
         SetTile(right, leftTile);
 
-        //match NEED TO JUST SEARCH EVERY SPOT IN GRID TO FIND COMPLETE MATCHES
-        HashSet<(int x, int y)> leftFallTiles = CompleteMatches(left);
-        HashSet<(int x, int y)> rightFallTiles = CompleteMatches(right);
+        HashSet<(Tile, (int x, int y))> tilesToMove = new HashSet<(Tile, (int x, int y))>();
 
-        //fall
-        Fall();
-        // Fall(leftFallTiles);
-        // Fall(rightFallTiles);
+        if(leftTile != null) tilesToMove.Add((leftTile, right));
+        if(rightTile != null) tilesToMove.Add((rightTile, left));
+
+        await MoveTilesAsync(tilesToMove);
+
+        await Task.Delay(500);
+
+        HashSet<(int x, int y)> tilesPositionToDestroy = new HashSet<(int x, int y)>();
+        if (leftTile == null || rightTile == null)
+        {
+            HashSet<(Tile, (int x, int y))> fallTiles = Fall();
+            await MoveTilesAsync(fallTiles);
+            await Task.Delay(500);
+            foreach ((Tile, (int x, int y) position) tile in fallTiles)
+            {
+                tilesPositionToDestroy.UnionWith(GetAllMatches(tile.position));
+            }
+        }
+        else
+        {
+
+            tilesPositionToDestroy.UnionWith(GetAllMatches(left));
+            tilesPositionToDestroy.UnionWith(GetAllMatches(right));
+        }
 
 
 
+        while (tilesPositionToDestroy.Count > 0)
+        {
+            await DestroyTilesAsync(tilesPositionToDestroy);
+            tilesPositionToDestroy.Clear();
+
+            await Task.Delay(500);
+
+            HashSet<(Tile, (int x, int y))> fallTiles = Fall();
+            await MoveTilesAsync(fallTiles);
+
+            await Task.Delay(500);
+
+            foreach ((Tile,(int x, int y)position) tile in fallTiles)
+            {
+                tilesPositionToDestroy.UnionWith(GetAllMatches(tile.position));
+            }
+        }
     }
 
 #region BasicTileFunctions
-
-
     public Tile GetTile((int x, int y) position)
     {   
         if (position.x < 0 || position.x >= gridWidth || position.y < 0 || position.y >= gridHeight)
@@ -97,19 +132,39 @@ public class GridManager : MonoBehaviour
         if(tile != null)
         {
             grid[position.x,position.y] = tile;
-            tile.Position = position;
         }
     }
-
-    public void DestroyTile((int x, int y) position)
+    private async Task MoveTilesAsync(HashSet<(Tile tile, (int x, int y) position)> tilesToMove)
     {
-        Tile tile = GetTile(position);
+        List<Task> tasks = new List<Task>();
 
-        if(tile != null) tile.DestroyMe();
-        grid[position.x,position.y] = null;
+        foreach((Tile tile, (int x, int y) position) movement in tilesToMove)
+        {
+            tasks.Add(movement.tile.MoveMeAsync(movement.position));
+
+        }
+
+        await Task.WhenAll(tasks);
     }
-#endregion
-#region MatchLogic
+
+    private async Task DestroyTilesAsync(HashSet<(int x, int y)> tilesPosition)
+    {
+        List<Task> tasks = new List<Task>();
+        foreach ((int x, int y) position in tilesPosition)
+        {
+            Tile tile = GetTile(position);
+            if (tile != null)
+            {
+                tasks.Add(tile.DestroyMeAsync());
+                SetNull(position);
+            }
+
+        }
+        await Task.WhenAll(tasks);
+    }
+
+    #endregion
+    #region MatchLogic
     HashSet<(int x, int y)> GetAllMatches((int x, int y) position)
     {
         if(GetTile(position) == null)
@@ -153,64 +208,9 @@ public class GridManager : MonoBehaviour
         GetMatchesInDirection(position, direction, matches);
     }
 
-    HashSet<(int x, int y)> CompleteMatches((int x, int y) position)
-    {
-        HashSet<(int x, int y)> tiles = GetAllMatches(position);
-       
-        HashSet<(int x, int y)> fallTiles = new HashSet<(int x, int y)>();
 
-        foreach((int x, int y) pos in tiles)
-        {
-            (int x, int y) newPos = (pos.x, pos.y + 1);
-            if(newPos.y < gridHeight && !tiles.Contains(newPos))
-            {
-                fallTiles.Add(newPos);
-            }
-        }
-
-        foreach((int x, int y) tilePosition in tiles)
-        {
-            DestroyTile(tilePosition);
-        }
-        
-        return fallTiles;
-    }
 #endregion
 #region TileLogic
-    //If no tile exist, fall tiles above
-    //If tile exist, fall tile
-    // void TileFallLogic((int x, int y) position)
-    // {
-    //     if(GetTile(position) == null)
-    //     {
-    //         Fall((position.x,position.y+1));
-    //     }
-    //     else
-    //     {
-    //         if(WillFall(position))
-    //         {
-    //             Fall(position);
-    //         }
-    //     }
-    // }
-    //Get All the tiles above that will need to fall
-    List<(int x, int y)> GetTilesAbove((int x, int y) position)
-    {
-        List<(int x, int y)> tiles = new List<(int x, int y)>();
-        (int x, int y) above = (position.x, position.y + 1);
-        while(above.y < gridHeight && GetTile(above) != null)
-        {
-            tiles.Add(above);
-            above.y += 1;
-        }
-        return tiles;
-    }
-    
-    // //Determine if when swapped, a piece will fall
-    // bool WillFall((int x, int y) position)
-    // {
-    //     return GetValidPositionBelow(position) == position ? false : true;
-    // }
 
     //Return the lowest not occupied position
     (int x, int y) GetValidPositionBelow((int x, int y) position)
@@ -221,10 +221,11 @@ public class GridManager : MonoBehaviour
             return position;
         }
         return GetValidPositionBelow(below);
-    } 
+    }
 
-    void Fall()
+    private HashSet<(Tile, (int x, int y))> Fall()
     {
+        HashSet<(Tile ,(int x, int y))> fallTiles = new HashSet<(Tile,(int x, int y))>();
         //Check every spot in the grid for an empty tile
         //Check above to see if any tiles need to fall
         for(int x=0; x < gridWidth; x++)
@@ -235,26 +236,15 @@ public class GridManager : MonoBehaviour
                 {
                     (int x, int y) lowestPosition = GetValidPositionBelow((x,y+1));
                     Tile tile = GetTile((x,y+1));
+                    fallTiles.Add((tile, lowestPosition));
                     SetNull((x,y+1));
                     SetTile(lowestPosition, tile);
                 } 
             }
         }
+    return fallTiles;
     }
-    // void Fall(HashSet<(int x, int y)> fallTiles)
-    // {   
-    //     foreach((int x, int y) ftPosition in fallTiles)
-    //     {
-    //         List<(int x, int y)> tilesAbove = new List<(int x, int y)>(GetTilesAbove(ftPosition));
 
-    //         foreach((int x, int y) taPosition in tilesAbove)
-    //         {
-    //             (int x, int y) lowestPosition = GetValidPositionBelow(taPosition);
-    //             Tile tile = GetTile(taPosition);
-    //             SetNull(taPosition);
-    //             SetTile(lowestPosition, tile);
-    //         }
-    //     }
-    // }
+
 #endregion
 }

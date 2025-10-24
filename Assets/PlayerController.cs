@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
+using System.Threading.Tasks;
 
 public class PlayerController : MonoBehaviour
 {
@@ -67,11 +68,11 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    void Swap(InputAction.CallbackContext context)
+    async void Swap(InputAction.CallbackContext context)
     {
         if(context.performed)
         {
-            gm.SwapTiles(leftSelector.Position, rightSelector.Position);
+            await gm.SwapTilesAsync(leftSelector.Position, rightSelector.Position);
         }
     }
     public void SetGridManager(GridManager gm)
